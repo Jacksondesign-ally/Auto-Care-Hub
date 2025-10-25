@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Care Hub - Professional Vehicle Diagnostic Solutions</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Core System -->
+    <script src="core/state.js"></script>
+    <script src="core/events.js"></script>
+    <script src="core/ui.js"></script>
+    
+    <!-- Data -->
+    <script src="data/marketplace-data.js"></script>
+    
+    <!-- Legacy modules (for AI engine) -->
+    <script src="diagnostic-ai.js"></script>
+    <script src="media-upload.js"></script>
+    
+    <!-- Enhanced Features -->
+    <script src="features/enhanced-diagnostics.js"></script>
+    <script src="features/ai-diagnostic-engine.js"></script>
+    <script src="features/computer-vision.js" defer></script>
+    <script src="features/voice-input.js" defer></script>
+    <script src="features/homepage-carousel.js" defer></script>
+    <script src="features/search.js" defer></script>
+    <script src="features/diagnostics.js" defer></script>
+    <script src="features/ui-manager.js" defer></script>
+    
+    <!-- Legacy Features -->
+    <script src="car-sales.js" defer></script>
+    <script src="car-slider.js" defer></script>
+    <script src="chatbot.js" defer></script>
+    <script src="direct-contact.js" defer></script>
+    <script src="auth.js" defer></script>
+    
+    <!-- Bootstrap (must be last) -->
+    <script src="core/bootstrap.js" defer></script>
+    
+    <!-- Backend Configuration -->
+    <script src="config.js"></script>
+    
+    <style>
+        :root {
+            --primary: #e53e3e;
+            --primary-dark: #c53030;
+            --secondary: #2d3748;
+            --accent: #ed8936;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        /* ThinkCar-Style Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(229, 62, 62, 0.39);
+        }
+        
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        /* Hero Gradient */
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Badge */
+        .badge-hot {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        
+        /* Feature Icon */
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        /* Homepage Carousel */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            height: 500px;
+            border-radius: 0;
+        }
+        
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+        
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .carousel-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .carousel-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        
+        .carousel-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .carousel-dot.active {
+            background: white;
+            width: 32px;
+            border-radius: 6px;
+        }
+        
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .carousel-arrow:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .carousel-arrow.left {
+            left: 20px;
+        }
+        
+        .carousel-arrow.right {
+            right: 20px;
+        }
+        
+        /* Dropdown Menu */
+        .dropdown-menu:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #fee;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Banner -->
+    <div class="bg-gradient-to-r from-red-600 to-red-700 text-white text-center py-2 text-sm">
+        <span class="font-semibold">🔥 Free AI Diagnostics | Multi-Language Support | 100+ Symptom Patterns</span>
+    </div>
+    
+    <!-- Header -->
+    <header class="bg-white">
+        <div class="container mx-auto px-6">
+            <!-- Top Header -->
+            <div class="flex justify-between items-center py-4 border-b">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="car" class="w-10 h-10 text-red-600"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Auto Care Hub</h1>
+                        <p class="text-xs text-gray-500">AI-Powered Diagnostics</p>
+                    </div>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-xl mx-8">
+                    <div class="relative">
+                        <input type="text" placeholder="Search symptoms, parts, mechanics..." 
+                            class="w-full px-4 py-2 pr-12 border-2 border-gray-200 rounded-full focus:border-red-500 focus:outline-none">
+                        <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    <button id="auth-button" class="flex items-center space-x-2 hover:text-red-600 transition">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <span class="text-sm font-medium">Sign In</span>
+                    </button>
+                    <div class="user-profile hidden">
+                        <button id="profile-menu-button" class="flex items-center space-x-2">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                            <span class="user-name font-medium"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="py-4">
+                <ul class="flex items-center space-x-8">
+                    <li><a href="#diagnostics" class="nav-link text-gray-700 hover:text-red-600 font-medium">AI Diagnostics</a></li>
+                    <li><a href="#features" class="nav-link text-gray-700 hover:text-red-600 font-medium">Features</a></li>
+                    <li><a href="#parts" class="nav-link text-gray-700 hover:text-red-600 font-medium">Car Parts</a></li>
+                    <li><a href="#mechanics" class="nav-link text-gray-700 hover:text-red-600 font-medium">Mechanics</a></li>
+                    <li>
+                        <a href="https://wa.me/264812095793" target="_blank" class="flex items-center gap-2 nav-link text-gray-700 hover:text-green-600 font-medium">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i>
+                            WhatsApp
+                        </a>
+                    </li>
+                    <li>
+                        <button id="seller-login-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
+                            Seller Login
+                        </button>
+                    </li>
+                    <li>
+                        <a href="/backend/admin" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-900 transition inline-block">
+                            Admin
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Homepage Carousel -->
+    <section class="carousel-container">
+        <div class="carousel-slides" id="carousel-slides">
+            <!-- Slide 1: Toyota Hilux Specials -->
+            <div class="carousel-slide" style="background: url('images/carousel/car.jpg') center/cover;">
+                <div class="carousel-content">
+                    <h2 class="text-5xl font-bold mb-4">Get Your Dream Hilux Today!</h2>
+                    <p class="text-xl mb-6">Monthly installments from N$6,499 • Toyota Specials Available</p>
+                    <button class="bg-white text-red-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        View Hilux Deals
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Slide 2: Indongo Toyota Dealership -->
+            <div class="carousel-slide" style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('images/carousel/indongo.jpg') center/cover;">
+                <div class="carousel-content">
+                    <h2 class="text-5xl font-bold mb-4">Visit Indongo Toyota</h2>
+                    <p class="text-xl mb-6">Namibia's trusted Toyota dealership • Sales, Service & Parts</p>
+                    <button class="bg-white text-red-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        Contact Dealer
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Vaya Auto Winter Sale -->
+            <div class="carousel-slide" style="background: url('images/carousel/maya.jpg') center/cover;">
+                <div class="carousel-content">
+                    <h2 class="text-5xl font-bold mb-4">Biggest Winter Sale!</h2>
+                    <p class="text-xl mb-6">Huge discounts on all models • Contact Vaya Auto Center Today</p>
+                    <button class="bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        See Winter Deals
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Slide 4: AI Diagnostics -->
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="carousel-content">
+                    <h2 class="text-5xl font-bold mb-4">AI Vehicle Diagnostics</h2>
+                    <p class="text-xl mb-6">Instant car problem diagnosis in 16 languages • Voice input available</p>
+                    <button class="bg-white text-purple-700 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        Try Free Diagnosis
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Find Mechanics & Parts -->
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="carousel-content">
+                    <h2 class="text-5xl font-bold mb-4">Find Mechanics & Car Parts</h2>
+                    <p class="text-xl mb-6">Connect with Windhoek mechanics • Browse quality parts with WhatsApp contact</p>
+                    <button class="bg-white text-pink-700 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                        Browse Marketplace
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <button class="carousel-arrow left" id="carousel-prev">
+            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+        </button>
+        <button class="carousel-arrow right" id="carousel-next">
+            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+        </button>
+        
+        <!-- Navigation Dots -->
+        <div class="carousel-nav" id="carousel-nav">
+            <div class="carousel-dot active" data-slide="0"></div>
+            <div class="carousel-dot" data-slide="1"></div>
+            <div class="carousel-dot" data-slide="2"></div>
+            <div class="carousel-dot" data-slide="3"></div>
+            <div class="carousel-dot" data-slide="4"></div>
+        </div>
+    </section>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- AI Diagnostic Section -->
+        <section id="diagnostics" class="mb-12">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl font-bold text-gray-900 mb-3">AI-Powered Vehicle Diagnostics</h2>
+                        <p class="text-lg text-gray-600">Describe your vehicle issue and get instant AI analysis with cost estimates</p>
+                    </div>
+                    
+                    <form id="diagnostic-form" class="space-y-6">
+                        <!-- Main Input -->
+                        <div class="relative">
+                            <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-4 top-4"></i>
+                            <input 
+                                type="text" 
+                                id="fault-input" 
+                                placeholder="Describe your issue (e.g., engine knocking when accelerating, car overheating after 10 minutes)" 
+                                class="w-full p-4 pl-12 pr-24 border-2 border-gray-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                            >
+                            <!-- Voice Input Button (will be added by voice-input.js) -->
+                            <div id="voice-button-container" class="absolute right-20 top-1/2 transform -translate-y-1/2"></div>
+                        </div>
+                        
+                        <!-- Media Upload & Additional Options -->
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <label for="media-upload" class="flex items-center gap-2 px-6 py-3 border-2 border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 cursor-pointer transition-all">
+                                <i data-lucide="camera" class="w-5 h-5 text-red-500"></i>
+                                <span class="font-medium">Add Photo/Video</span>
+                                <input type="file" id="media-upload" accept="image/*,video/*" class="hidden" multiple>
+                            </label>
+                            
+                            <!-- Language Selector (if available) -->
+                            <div id="language-selector-container"></div>
+                        </div>
+                        
+                        <!-- Media Preview -->
+                        <div id="media-preview" class="flex flex-wrap gap-3"></div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="w-full btn-primary px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center">
+                            <i data-lucide="brain" class="w-6 h-6 mr-2"></i>
+                            Analyze with AI
+                        </button>
+                        
+                        <p class="text-center text-sm text-gray-500 flex items-center justify-center">
+                            <i data-lucide="info" class="w-4 h-4 mr-1 text-red-400"></i>
+                            Photos and videos can improve diagnosis accuracy by up to 50%
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Results Section (Hidden by default, shown after diagnosis) -->
+        <section id="results-section" data-tab-content="diagnostics" class="mb-12 hidden">
+            <div class="flex items-center mb-6">
+                <i data-lucide="cpu" class="w-6 h-6 text-red-600 mr-2"></i>
+                <h3 class="text-3xl font-bold">AI Diagnostic Results</h3>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Possible Causes -->
+                <div class="card p-6">
+                    <div class="flex items-center mb-4">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600 mr-2"></i>
+                        <h4 class="text-xl font-semibold">Possible Causes</h4>
+                    </div>
+                    <ul id="causes-list" class="space-y-2 text-gray-700">
+                        <!-- Will be populated after diagnosis -->
+                    </ul>
+                </div>
+
+                <!-- Car Health -->
+                <div class="card p-6">
+                    <div class="flex items-center mb-4">
+                        <i data-lucide="heart-pulse" class="w-6 h-6 text-red-600 mr-2"></i>
+                        <h4 class="text-xl font-semibold">Car Health</h4>
+                    </div>
+                    <div id="health-indicator" class="mb-4">
+                        <!-- Will be populated after diagnosis -->
+                    </div>
+                    <p id="health-description" class="text-gray-700">
+                        <!-- Will be populated after diagnosis -->
+                    </p>
+                </div>
+
+                <!-- Recommended Parts -->
+                <div class="card p-6">
+                    <div class="flex items-center mb-4">
+                        <i data-lucide="shopping-cart" class="w-6 h-6 text-red-600 mr-2"></i>
+                        <h4 class="text-xl font-semibold">Recommended Parts</h4>
+                    </div>
+                    <ul id="parts-list" class="space-y-2 text-gray-700">
+                        <!-- Will be populated after diagnosis -->
+                    </ul>
+                    <button class="mt-4 w-full btn-primary px-4 py-2 rounded-lg font-medium">
+                        View All Parts
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Follow-up Container -->
+            <div id="follow-up-container" class="hidden mt-8 bg-red-50 rounded-xl p-6 border border-red-100"></div>
+        </section>
+        
+        <!-- Features Showcase -->
+        <section id="features" class="py-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">How Our AI Diagnostics Work</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Advanced technology for accurate vehicle diagnostics</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-8 text-center">
+                    <div class="feature-icon">
+                        <i data-lucide="mic" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Multi-Language Input</h3>
+                    <p class="text-gray-600">Voice or text input in 7+ languages including English, French, Arabic, and more</p>
+                </div>
+                
+                <div class="card p-8 text-center">
+                    <div class="feature-icon">
+                        <i data-lucide="brain" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">AI Analysis</h3>
+                    <p class="text-gray-600">100+ symptom patterns with regional and climate adaptations for African markets</p>
+                </div>
+                
+                <div class="card p-8 text-center">
+                    <div class="feature-icon">
+                        <i data-lucide="camera" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Computer Vision</h3>
+                    <p class="text-gray-600">Image-based damage detection for visual diagnosis</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Car Parts Section -->
+        <section id="parts" class="py-16 bg-white">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Browse Car Parts</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Quality parts from verified sellers</p>
+            </div>
+            
+            <div id="parts-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Parts will be loaded from backend -->
+                <div class="text-center py-12 col-span-4">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-red-600"></div>
+                    <p class="mt-4 text-gray-600">Loading parts...</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Mechanics Section -->
+        <section id="mechanics" class="py-16 bg-gray-50">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Find Professional Mechanics</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Connect with verified mechanics near you</p>
+            </div>
+            
+            <div id="mechanics-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Mechanics will be loaded from backend -->
+                <div class="text-center py-12 col-span-3">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-red-600"></div>
+                    <p class="mt-4 text-gray-600">Loading mechanics...</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Car Sales Section -->
+        <section id="car-sales-section" data-tab-content="sales" class="hidden mb-12">
+            <h3 class="text-2xl font-bold mb-6">Available Vehicles</h3>
+            <div id="car-listings" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Car listings will be populated by JavaScript -->
+            </div>
+        </section>
+        
+        <!-- User Dashboard -->
+        <section id="user-dashboard" class="protected-content hidden card p-8 mb-12">
+            <h2 class="text-2xl font-bold mb-6">My Dashboard</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Dashboard content -->
+            </div>
+        </section>
+        
+        <!-- Contact Us Section -->
+        <section id="contact" class="py-16 bg-gradient-to-br from-gray-50 to-gray-100">
+            <div class="container mx-auto px-6">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
+                        <p class="text-lg text-gray-600">Have questions? We're here to help!</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Contact Form -->
+                        <div class="card p-8">
+                            <h3 class="text-xl font-bold mb-6">Send us a message</h3>
+                            <form id="contact-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                    <input type="text" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                    <input type="email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                    <textarea rows="4" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"></textarea>
+                                </div>
+                                <button type="submit" class="w-full btn-primary px-6 py-3 rounded-lg font-medium">
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Contact Info -->
+                        <div class="card p-8">
+                            <h3 class="text-xl font-bold mb-6">Get in touch</h3>
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="feature-icon" style="width: 48px; height: 48px;">
+                                        <i data-lucide="mail" class="w-5 h-5 text-white"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold mb-1">Email</h4>
+                                        <p class="text-gray-600">support@autocarehub.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="feature-icon" style="width: 48px; height: 48px;">
+                                        <i data-lucide="phone" class="w-5 h-5 text-white"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold mb-1">Phone / WhatsApp</h4>
+                                        <a href="tel:+264812095793" class="text-gray-600 hover:text-red-600">+264 81 209 5793</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="feature-icon" style="width: 48px; height: 48px;">
+                                        <i data-lucide="map-pin" class="w-5 h-5 text-white"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold mb-1">Location</h4>
+                                        <p class="text-gray-600">Windhoek, Namibia</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Auto Care Hub</h3>
+                    <p class="text-gray-400 text-sm">Professional AI-powered vehicle diagnostics and marketplace.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Features</h3>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white">AI Diagnostics</a></li>
+                        <li><a href="#" class="hover:text-white">Voice Input</a></li>
+                        <li><a href="#" class="hover:text-white">Computer Vision</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-lucide="facebook" class="w-6 h-6"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-lucide="twitter" class="w-6 h-6"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 Auto Care Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Seller/Mechanic Login Modal -->
+    <div id="seller-login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Seller & Mechanic Portal</h2>
+                <button onclick="closeSellerModal()" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <p class="text-gray-600 mb-6">Access your dashboard to manage listings, view analytics, and more.</p>
+            
+            <div class="space-y-4">
+                <a href="/backend/seller-login" class="block w-full bg-blue-600 text-white text-center px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 inline mr-2"></i>
+                    Car Parts Seller Login
+                </a>
+                
+                <a href="/backend/mechanic-login" class="block w-full bg-purple-600 text-white text-center px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                    <i data-lucide="wrench" class="w-5 h-5 inline mr-2"></i>
+                    Mechanic Login
+                </a>
+            </div>
+            
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-700 mb-2"><strong>New seller or mechanic?</strong></p>
+                <p class="text-sm text-gray-600">Contact us via WhatsApp to register and purchase a package:</p>
+                <a href="https://wa.me/264812095793" target="_blank" class="inline-flex items-center gap-2 mt-2 text-green-600 hover:text-green-700 font-semibold">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    +264 81 209 5793
+                </a>
+            </div>
+            
+            <p class="text-xs text-gray-500 mt-4 text-center">
+                All listings require admin approval before going live
+            </p>
+        </div>
+    </div>
+    
+    <!-- Debug Panel -->
+    <div id="debug-panel" class="hidden fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="font-bold">DEBUG MODE</div>
+            <div class="flex space-x-4">
+                <button id="debug-state" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700">Show State</button>
+                <button id="debug-events" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700">Show Events</button>
+                <button id="debug-modules" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700">Show Modules</button>
+                <button id="debug-performance" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700">Performance</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fix Hidden Features -->
+    <script src="fix-hidden-features.js"></script>
+    
+    <script>
+        // Initialize Lucide icons
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+        
+        // Load Parts from Backend
+        async function loadParts() {
+            try {
+                const response = await AutoCareConfig.apiCall(AutoCareConfig.endpoints.parts);
+                const partsGrid = document.getElementById('parts-grid');
+                
+                if (response.data && response.data.length > 0) {
+                    partsGrid.innerHTML = response.data.map(part => `
+                        <div class="card p-4">
+                            <img src="${part.image || 'https://via.placeholder.com/200'}" alt="${part.name}" class="w-full h-48 object-cover rounded-lg mb-3">
+                            <h4 class="font-bold text-lg mb-2">${part.name}</h4>
+                            <p class="text-gray-600 text-sm mb-2">${part.description || ''}</p>
+                            <div class="text-sm text-gray-700 mb-2">
+                                <p class="font-semibold">${part.seller_name || 'Seller'}</p>
+                                ${part.phone ? `<p class="flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3"></i> ${part.phone}</p>` : ''}
+                                ${part.whatsapp ? `<a href="https://wa.me/${part.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="flex items-center gap-1 text-green-600 hover:text-green-700"><i data-lucide="message-circle" class="w-3 h-3"></i> WhatsApp</a>` : ''}
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-red-600 font-bold">$${part.price}</span>
+                                <button class="btn-primary px-4 py-2 rounded-lg text-sm">View Details</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    // Re-initialize Lucide icons
+                    if (window.lucide) window.lucide.createIcons();
+                } else {
+                    partsGrid.innerHTML = '<p class="text-center text-gray-600 col-span-4">No parts available</p>';
+                }
+            } catch (error) {
+                console.error('Error loading parts:', error);
+                document.getElementById('parts-grid').innerHTML = '<p class="text-center text-red-600 col-span-4">Failed to load parts. Please check backend connection.</p>';
+            }
+        }
+        
+        // Load Mechanics from Backend
+        async function loadMechanics() {
+            try {
+                const response = await AutoCareConfig.apiCall(AutoCareConfig.endpoints.mechanics);
+                const mechanicsGrid = document.getElementById('mechanics-grid');
+                
+                if (response.data && response.data.length > 0) {
+                    mechanicsGrid.innerHTML = response.data.map(mechanic => `
+                        <div class="card p-6">
+                            <div class="flex items-center mb-4">
+                                <img src="${mechanic.photo || 'https://via.placeholder.com/80'}" alt="${mechanic.name}" class="w-16 h-16 rounded-full object-cover">
+                                <div class="ml-4">
+                                    <h4 class="font-bold text-lg">${mechanic.name}</h4>
+                                    <p class="text-gray-600 text-sm">${mechanic.specialization || 'General Mechanic'}</p>
+                                    <p class="text-gray-500 text-xs">${mechanic.location || ''}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-3 text-sm">${mechanic.services || mechanic.description || ''}</p>
+                            <div class="mb-3 text-sm space-y-1">
+                                ${mechanic.phone ? `<p class="flex items-center gap-2 text-gray-700"><i data-lucide="phone" class="w-4 h-4"></i> <a href="tel:${mechanic.phone}" class="hover:text-red-600">${mechanic.phone}</a></p>` : ''}
+                                ${mechanic.whatsapp ? `<p class="flex items-center gap-2"><i data-lucide="message-circle" class="w-4 h-4 text-green-600"></i> <a href="https://wa.me/${mechanic.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="text-green-600 hover:text-green-700">WhatsApp</a></p>` : ''}
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center text-yellow-400">
+                                    <span>★★★★★</span>
+                                    <span class="text-gray-600 text-sm ml-2">(${mechanic.rating || '5.0'})</span>
+                                </div>
+                                ${mechanic.phone ? `<a href="tel:${mechanic.phone}" class="btn-primary px-4 py-2 rounded-lg text-sm">Call Now</a>` : '<button class="btn-primary px-4 py-2 rounded-lg text-sm">Contact</button>'}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    mechanicsGrid.innerHTML = '<p class="text-center text-gray-600 col-span-3">No mechanics available</p>';
+                }
+            } catch (error) {
+                console.error('Error loading mechanics:', error);
+                document.getElementById('mechanics-grid').innerHTML = '<p class="text-center text-red-600 col-span-3">Failed to load mechanics. Please check backend connection.</p>';
+            }
+        }
+        
+        // Load Carousel Images from Backend
+        async function loadCarouselImages() {
+            try {
+                // Try to load carousel images from backend
+                const response = await AutoCareConfig.apiCall(AutoCareConfig.endpoints.carouselImages);
+                const slides = document.getElementById('carousel-slides');
+                
+                if (response.data && response.data.length > 0) {
+                    slides.innerHTML = response.data.map((slide, index) => `
+                        <div class="carousel-slide" style="background-image: url('${slide.image_url}'); background-size: cover;">
+                            <div class="carousel-content">
+                                <h2 class="text-5xl font-bold mb-4">${slide.title || ''}</h2>
+                                <p class="text-xl mb-6">${slide.description || ''}</p>
+                                <button class="bg-white text-purple-700 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                                    ${slide.button_text || 'Learn More'}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    // Update dots count
+                    const dotsContainer = document.getElementById('carousel-nav');
+                    dotsContainer.innerHTML = response.data.map((_, index) => 
+                        `<div class="carousel-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`
+                    ).join('');
+                    
+                    console.log('✅ Carousel images loaded from backend');
+                    return response.data.length;
+                }
+            } catch (error) {
+                console.log('⚠️ Using default carousel slides (backend not available)');
+            }
+            return 5; // Return default slide count
+        }
+        
+        // Homepage Carousel
+        (async function() {
+            const slides = document.getElementById('carousel-slides');
+            const prevBtn = document.getElementById('carousel-prev');
+            const nextBtn = document.getElementById('carousel-next');
+            
+            if (!slides) return;
+            
+            // Load carousel images from backend
+            const totalSlides = await loadCarouselImages();
+            const dots = document.querySelectorAll('.carousel-dot');
+            
+            let currentSlide = 0;
+            let autoSlideInterval;
+            
+            function goToSlide(n) {
+                currentSlide = (n + totalSlides) % totalSlides;
+                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                // Update dots
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            function nextSlide() {
+                goToSlide(currentSlide + 1);
+            }
+            
+            function prevSlide() {
+                goToSlide(currentSlide - 1);
+            }
+            
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+            }
+            
+            function stopAutoSlide() {
+                clearInterval(autoSlideInterval);
+            }
+            
+            // Event listeners
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    prevSlide();
+                    stopAutoSlide();
+                    startAutoSlide(); // Restart auto-slide after manual navigation
+                });
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    nextSlide();
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+            }
+            
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+            });
+            
+            // Pause auto-slide on hover
+            const carouselContainer = document.querySelector('.carousel-container');
+            if (carouselContainer) {
+                carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+                carouselContainer.addEventListener('mouseleave', startAutoSlide);
+            }
+            
+            // Start auto-slide
+            startAutoSlide();
+            
+            console.log('✅ Homepage carousel initialized');
+        })();
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load parts and mechanics from backend
+            loadParts();
+            loadMechanics();
+            
+            // Re-initialize Lucide icons after dynamic content loads
+            setTimeout(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, 1000);
+        });
+        
+        // Seller Login Modal Functions
+        function openSellerModal() {
+            document.getElementById('seller-login-modal').classList.remove('hidden');
+        }
+        
+        function closeSellerModal() {
+            document.getElementById('seller-login-modal').classList.add('hidden');
+        }
+        
+        // Seller Login Button Click
+        document.getElementById('seller-login-btn')?.addEventListener('click', openSellerModal);
+        
+        // Close modal on background click
+        document.getElementById('seller-login-modal')?.addEventListener('click', function(e) {
+            if (e.target.id === 'seller-login-modal') {
+                closeSellerModal();
+            }
+        });
+    </script>
+</body>
+</html>
